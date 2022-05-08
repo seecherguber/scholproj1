@@ -34,3 +34,4 @@ function updateCanvas(){
 		ctx.fillRect(lifeCount*50, 0, 30,30) // Draw the life, use the lifeCounter to control the position
 		lifeCount++ // Move to the next life
 	}
+}
