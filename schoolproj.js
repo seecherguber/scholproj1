@@ -12,7 +12,7 @@ const HEIGHT = 500
 var player = {
 	width:20,
 	height:20,
-	speed:5,
+	speed:0.25,
 	xPosition:300,
 	yPosition:500-20-5 //HEIGHT-player.height-5
 
@@ -46,31 +46,80 @@ function updateCanvas(){
 		lifeCount++ // Move to the next life
 
 	// Draw the player
+	if(player.xPosition+player.width>WIDTH){
+		player.xPosition = WIDTH-player.width
+	}
+	if(player.xPosition<0){
+		player.xPosition = 0
+	}
 	ctx.fillStyle="purple"
 	ctx.fillRect(player.xPosition,player.yPosition,player.width,player.height)
+	
+	movePlayer()
 	}
+}
+function movePlayer(){
+	if(leftPressed==true){
+		player.xPosition -= player.speed
+	}
+	if(rightPressed==true){
+		player.xPosition += player.speed
+		}
 }
 window.addEventListener('keydown', keyDownFunction)
 function keyDownFunction(keyboardEvent){
 	var keyDown = keyboardEvent.key
-
-	
-	if (keyDown=="a"){
-		leftPressed = true
-	}
-	if (keyDown=="d"){
+	switch(keyDown){
+		case "a":
+			leftPressed = true
+			lastDirection = "left"
+			break;
+		case "d":
 		rightPressed = true
+		lastDirection = "right"
+		break;
+		case "Shift":
+		if (lastDirection=="left"){
+				player.xPosition -= 100
+				}
+		if (lastDirection=="right"){
+				player.xPosition += 100
+				}
+		
+		break;
+		default:
+			break;
+
 	}
-	if(leftPressed==true&&player.xPosition>0){
-		player.xPosition -= player.speed
-	}
-	if(rightPressed==true&&player.xPosition<WIDTH-player.width){
-		player.xPosition += player.speed
-		}
+	////Old movement code
+	//if (keyDown=="a"){
+	//	leftPressed = true
+	//	lastDirectionRight = false
+	//	lastDirectionLeft = true
+	//}
+	//if (keyDown=="d"){
+	//	rightPressed = true,
+	//	lastDirectionLeft = false
+	//	lastDirectionRight = true
+	//}
+//	if(leftPressed==true&&player.xPosition>0){
+//		player.xPosition -= player.speed
+//	}
+//	if(rightPressed==true&&player.xPosition<WIDTH-player.width){
+//		player.xPosition += player.speed
+//		}
+//		if(keyDown=="Shift"&&lastDirectionLeft==true&&player.xPosition>0){
+//			player.xPosition -= player.speed+100
+//		}
+//		if(keyDown=="Shift"&&lastDirectionRight==true&&player.xPosition<WIDTH-player.width){
+//			player.xPosition += player.speed+100
+//		
+//			}
+
 	//if (keyDown=="a"&&playerSpeed<5||keyDown=="d"&&playerSpeed<5){
 	//		playerSpeed=playerSpeed+0.5
 	//}
-		
+	
 	
 }
 window.addEventListener('keyup', keyUpFunction)
@@ -78,7 +127,7 @@ window.addEventListener('keyup', keyUpFunction)
 function keyUpFunction(keyboardEvent){
 	var keyUp = keyboardEvent.key
 	console.log("You just unpressed", keyUp)
-	
+	//stopping the player moving
 	if (keyUp=="a"){
 		leftPressed = false
 	}
