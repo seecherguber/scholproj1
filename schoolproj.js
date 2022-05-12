@@ -19,7 +19,7 @@ var player = {
 }
 var leftPressed = false
 var rightPressed = false
-
+var dashCooldown = 0
 var ctx
 var lives = 3
 
@@ -45,7 +45,16 @@ function updateCanvas(){
 		ctx.fillRect(10+lifeCount*35, 10, 20,20) // Draw the life, use the lifeCounter to control the position
 		lifeCount++ // Move to the next life
 
+		ctx.fillStyle = "white"
+		ctx.fillText(dashCooldown,120,10)
+	
 	// Draw the player
+	drawPlayer()
+	//move the player
+	movePlayer()
+	}
+}
+function drawPlayer(){
 	if(player.xPosition+player.width>WIDTH){
 		player.xPosition = WIDTH-player.width
 	}
@@ -54,9 +63,6 @@ function updateCanvas(){
 	}
 	ctx.fillStyle="purple"
 	ctx.fillRect(player.xPosition,player.yPosition,player.width,player.height)
-	
-	movePlayer()
-	}
 }
 function movePlayer(){
 	if(leftPressed==true){
@@ -79,11 +85,15 @@ function keyDownFunction(keyboardEvent){
 		lastDirection = "right"
 		break;
 		case "Shift":
-		if (lastDirection=="left"){
+		if (lastDirection=="left"&&dashCooldown=="0"){
 				player.xPosition -= 100
+				cooldown()
+				console.log("hi3")
 				}
-		if (lastDirection=="right"){
+		if (lastDirection=="right"&&dashCooldown=="0"){
 				player.xPosition += 100
+				console.log("hi1")
+				cooldown()
 				}
 		
 		break;
@@ -91,6 +101,21 @@ function keyDownFunction(keyboardEvent){
 			break;
 
 	}
+	function cooldown(){
+			console.log("hi")
+			dashCooldown=10
+			if( dashCooldown>0){
+			
+				setInterval(function(){
+					if(dashCooldown>0){
+					dashCooldown=dashCooldown-1}
+				},1000)
+			
+
+			
+		}
+	}
+
 	////Old movement code
 	//if (keyDown=="a"){
 	//	leftPressed = true
