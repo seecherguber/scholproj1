@@ -104,7 +104,8 @@ function keyDownFunction(keyboardEvent){
 	function cooldown(){
 			console.log("hi")
 			dashCooldown=10
-			setInterval(function(){
+			while (dashCooldown>0){
+			setTimeout(function(){
 					if(dashCooldown>0){
 					dashCooldown=dashCooldown-1
 					}
@@ -115,7 +116,10 @@ function keyDownFunction(keyboardEvent){
 					}
 
 				}
-				,1000)	
+			
+		
+			
+				,1000)	}
 		
 	}
 
