@@ -74,7 +74,7 @@ function movePlayer(){
 }
 window.addEventListener('keydown', keyDownFunction)
 function keyDownFunction(keyboardEvent){
-	var keyDown = keyboardEvent.key
+	var keyDown = keyboardEvent.key			//new movement code
 	switch(keyDown){
 		case "a":
 			leftPressed = true
@@ -104,16 +104,19 @@ function keyDownFunction(keyboardEvent){
 	function cooldown(){
 			console.log("hi")
 			dashCooldown=10
-			if( dashCooldown>0){
-			
-				setInterval(function(){
+			setInterval(function(){
 					if(dashCooldown>0){
-					dashCooldown=dashCooldown-1}
-				},1000)
-			
+					dashCooldown=dashCooldown-1
+					}
+					else{
+						console.log("debug")
+						clearInterval
 
-			
-		}
+					}
+
+				}
+				,1000)	
+		
 	}
 
 	////Old movement code
@@ -153,10 +156,10 @@ function keyUpFunction(keyboardEvent){
 	var keyUp = keyboardEvent.key
 	console.log("You just unpressed", keyUp)
 	//stopping the player moving
-	if (keyUp=="a"){
+	if (keyUp=="a"||keyUp=="A"){
 		leftPressed = false
 	}
-	if (keyUp=="d"){
+	if (keyUp=="d"||keyUp=="D"){		//wk3 lesson 1 added caps so it stops moving while shift pressed
 		rightPressed = false
 		}
 	//	if (keyUp=="a"||keyUp=="d"){
