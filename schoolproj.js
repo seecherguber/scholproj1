@@ -28,10 +28,11 @@ window.onload=startCanvas
 function startCanvas(){
 	ctx=document.getElementById("myCanvas").getContext("2d")
 	// Set up the animation with an interval timer.
-	setInterval(updateCanvas, 1)
+	setInterval(updateCanvas, 10)
 }
 
 function updateCanvas(){
+	
 	//console.log(player)
 	// Clear the scren
 	ctx.fillStyle = "black"
@@ -88,11 +89,9 @@ function keyDownFunction(keyboardEvent){
 		if (lastDirection=="left"&&dashCooldown=="0"){
 				player.xPosition -= 100
 				cooldown()
-				console.log("hi3")
 				}
 		if (lastDirection=="right"&&dashCooldown=="0"){
 				player.xPosition += 100
-				console.log("hi1")
 				cooldown()
 				}
 		
@@ -102,25 +101,29 @@ function keyDownFunction(keyboardEvent){
 
 	}
 	function cooldown(){
-			console.log("hi")
+		
+			
 			dashCooldown=10
-			while (dashCooldown>0){
-			setTimeout(function(){
+			if (dashCooldown>0){
+		var cooldownInterval =	setInterval(function(){
 					if(dashCooldown>0){
 					dashCooldown=dashCooldown-1
 					}
-					else{
-						console.log("debug")
-						clearInterval
-
-					}
-
+					
 				}
 			
 		
 			
 				,1000)	}
-		
+		setInterval(function(){ //cooldown cooldown
+			if(dashCooldown==0){
+			
+	
+					clearInterval(cooldownInterval)
+
+			}
+		} ,10
+		)
 	}
 
 	////Old movement code
