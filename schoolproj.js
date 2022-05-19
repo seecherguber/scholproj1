@@ -12,14 +12,18 @@ const HEIGHT = 500
 var player = {
 	width:20,
 	height:20,
-	speed:0.25,
-	xPosition:300,
-	yPosition:500-20-5 //HEIGHT-player.height-5
-
+	speed:0.5,
+	xPosition:20,
+	yPosition:500-20-5, //HEIGHT-player.height-5
+	colour: "purple"
 }
+var parry = 0
 var leftPressed = false
 var rightPressed = false
+var shieldPressed = false
+var wHeld = false
 var dashCooldown = 0
+var parryCooldown = 0
 var ctx
 var lives = 3
 
@@ -41,18 +45,20 @@ function updateCanvas(){
 	// Every frame, draw all of the lives
 	// This loop will draw one red square for each life left
 	lifeCount = 0 // Start at the first life (counting from zero)
+	ctx.fillStyle = "purple"
+	ctx.fillRect(120,10,dashCooldown*10,20)
+
+// Draw the player
+drawPlayer()
+//move the player
+movePlayer()
+shield()
 	while (lifeCount < lives){
 		ctx.fillStyle = "red"
 		ctx.fillRect(10+lifeCount*35, 10, 20,20) // Draw the life, use the lifeCounter to control the position
 		lifeCount++ // Move to the next life
 
-		ctx.fillStyle = "white"
-		ctx.fillText(dashCooldown,120,10)
 	
-	// Draw the player
-	drawPlayer()
-	//move the player
-	movePlayer()
 	}
 }
 function drawPlayer(){
@@ -62,7 +68,7 @@ function drawPlayer(){
 	if(player.xPosition<0){
 		player.xPosition = 0
 	}
-	ctx.fillStyle="purple"
+	ctx.fillStyle=player.colour
 	ctx.fillRect(player.xPosition,player.yPosition,player.width,player.height)
 }
 function movePlayer(){
@@ -73,6 +79,21 @@ function movePlayer(){
 		player.xPosition += player.speed
 		}
 }
+function shield(){
+	if(parryCooldown>0){
+		parryCooldown-=1
+	}
+	if(shieldPressed==true&&parry>0){
+ctx.fillStyle = "white"
+ctx.fillRect(player.xPosition-15,player.yPosition-15,50,2)
+parry-=1
+
+	}
+else if(shieldPressed==true){
+	ctx.fillStyle = "grey"
+ctx.fillRect(player.xPosition-10,player.yPosition-10,40,2)
+}
+}
 window.addEventListener('keydown', keyDownFunction)
 function keyDownFunction(keyboardEvent){
 	var keyDown = keyboardEvent.key			//new movement code
@@ -82,8 +103,17 @@ function keyDownFunction(keyboardEvent){
 			lastDirection = "left"
 			break;
 		case "d":
-		rightPressed = true
-		lastDirection = "right"
+			rightPressed = true
+			lastDirection = "right"
+
+		break;
+		case "A":
+			leftPressed = true
+			lastDirection = "left"
+			break;
+		case "D":
+			rightPressed = true
+			lastDirection = "right"
 		break;
 		case "Shift":
 		if (lastDirection=="left"&&dashCooldown=="0"){
@@ -96,28 +126,30 @@ function keyDownFunction(keyboardEvent){
 				}
 		
 		break;
+		case "w":
+			shieldPressed = true
+			if(parryCooldown==0&&wHeld==false){
+				parry = 20
+				wHeld=true
+				parryCooldown = 100
+			}
 		default:
 			break;
 
 	}
 	function cooldown(){
-		
-			
 			dashCooldown=10
 			if (dashCooldown>0){
+				player.colour = "red"
 		var cooldownInterval =	setInterval(function(){
 					if(dashCooldown>0){
-					dashCooldown=dashCooldown-1
-					}
-					
+					dashCooldown=dashCooldown-0.0625
+					}	
 				}
-			
-		
-			
-				,1000)	}
+				,62.5)	}
 		setInterval(function(){ //cooldown cooldown
 			if(dashCooldown==0){
-			
+			player.colour="purple"
 	
 					clearInterval(cooldownInterval)
 
@@ -166,9 +198,14 @@ function keyUpFunction(keyboardEvent){
 	if (keyUp=="a"||keyUp=="A"){
 		leftPressed = false
 	}
-	if (keyUp=="d"||keyUp=="D"){		//wk3 lesson 1 added caps so it stops moving while shift pressed
+	if (keyUp=="d"||keyUp=="D"){		//wk3 lesson 1 added caps so you can stop moving while shift pressed
 		rightPressed = false
 		}
+	if(keyUp=="w"||keyUp=="W"){
+		shieldPressed = false
+		wHeld=false
+		parry=0
+	}
 	//	if (keyUp=="a"||keyUp=="d"){
 	//		playerSpeed=1
 	//}
