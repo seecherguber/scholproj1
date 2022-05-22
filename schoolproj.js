@@ -21,7 +21,12 @@ var parry = 0
 var leftPressed = false
 var rightPressed = false
 var shieldPressed = false
-var wHeld = false
+const PROJECTILE1 = {
+	HEIGHT: 10,
+	WIDTH:2,
+	SPEED:1
+}
+var projecArray = []
 var dashCooldown = 0
 var parryCooldown = 0
 var ctx
@@ -53,12 +58,43 @@ drawPlayer()
 //move the player
 movePlayer()
 shield()
+drawProjectiles()
 	while (lifeCount < lives){
 		ctx.fillStyle = "red"
 		ctx.fillRect(10+lifeCount*35, 10, 20,20) // Draw the life, use the lifeCounter to control the position
 		lifeCount++ // Move to the next life
 
 	
+	}
+}
+function drawProjectiles(){
+	var projecNumber = 0 // Start at drop 0
+	while (projecNumber < projecArray.length){ // Keep going until you get to the last drop
+		projecArray[projecNumber].moveProjectile()
+		projecNumber ++ // Do the next drop
+	}if(projecNumber >= projecArray.length){
+		console.log("big")
+	}
+	ctx.fillStyle = "white"
+	var projecNumber = 0 // Start at drop 0
+	while (projecNumber < projecArray.length){ // Keep going until you get to the last drop
+		ctx.fillRect(projecArray[projecNumber].xPosition, projecArray[projecNumber].yPosition, PROJECTILE1.WIDTH, PROJECTILE1.HEIGHT);
+		projecNumber ++ // Do the next drop
+	}
+}
+class Projectile{ 
+	
+	constructor(x){
+		
+		this.xPosition = x
+		
+		this.yPosition = 0
+	}
+	moveProjectile(){
+		
+		this.yPosition += PROJECTILE1.SPEED
+	
+
 	}
 }
 function drawPlayer(){
@@ -127,12 +163,14 @@ function keyDownFunction(keyboardEvent){
 		
 		break;
 		case "w":
-			shieldPressed = true
-			if(parryCooldown==0&&wHeld==false){
+			projecArray.push(new Projectile(50))
+		
+			if(parryCooldown==0&&shieldPressed==false){//shieldPressed is there so it doesnt give parry frames mid block
 				parry = 20
-				wHeld=true
+				
 				parryCooldown = 100
 			}
+			shieldPressed = true
 		default:
 			break;
 
@@ -203,7 +241,7 @@ function keyUpFunction(keyboardEvent){
 		}
 	if(keyUp=="w"||keyUp=="W"){
 		shieldPressed = false
-		wHeld=false
+	
 		parry=0
 	}
 	//	if (keyUp=="a"||keyUp=="d"){
