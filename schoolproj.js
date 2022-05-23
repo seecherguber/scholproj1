@@ -17,6 +17,12 @@ var player = {
 	yPosition:500-20-5, //HEIGHT-player.height-5
 	colour: "purple"
 }
+var shield = {
+xPosition: player.xPosition-10	,
+yPosition: player.yPosition-10 ,
+width: 40,
+height: 2
+}
 var parry = 0
 var leftPressed = false
 var rightPressed = false
@@ -52,12 +58,12 @@ function updateCanvas(){
 	lifeCount = 0 // Start at the first life (counting from zero)
 	ctx.fillStyle = "purple"
 	ctx.fillRect(120,10,dashCooldown*10,20)
-
+	console.log("number of projectiles is, "+projecArray.length)
 // Draw the player
 drawPlayer()
 //move the player
 movePlayer()
-shield()
+shieldFunction()
 drawProjectiles()
 	while (lifeCount < lives){
 		ctx.fillStyle = "red"
@@ -65,6 +71,19 @@ drawProjectiles()
 		lifeCount++ // Move to the next life
 
 	
+	}
+	//collision stuff
+
+	var projecNumber = 0 // Start at drop 0
+	while (projecNumber < projecArray.length){ // Keep going until you get to the last drop
+		console.log("checking collision")
+		if (shieldHit(projecArray[projecNumber].xPosition, projecArray[projecNumber].yPosition)){ // Check the drop's xPosition and yPosition
+		  // Change the umbrella color
+		  
+		   projecArray.splice(projecNumber,1)	
+		   console.log("spliced?")		// Reset the yPosition to the top
+		}
+		projecNumber ++ // Do the next drop
 	}
 }
 function drawProjectiles(){
@@ -79,6 +98,10 @@ function drawProjectiles(){
 	var projecNumber = 0 // Start at drop 0
 	while (projecNumber < projecArray.length){ // Keep going until you get to the last drop
 		ctx.fillRect(projecArray[projecNumber].xPosition, projecArray[projecNumber].yPosition, PROJECTILE1.WIDTH, PROJECTILE1.HEIGHT);
+		if(projecArray[projecNumber].yPosition>HEIGHT){
+			projecArray.splice(projecNumber,1)
+		}
+		
 		projecNumber ++ // Do the next drop
 	}
 }
@@ -89,11 +112,12 @@ class Projectile{
 		this.xPosition = x
 		
 		this.yPosition = 0
+		this.parried = false
 	}
 	moveProjectile(){
-		
+		if(this.parried==false){
 		this.yPosition += PROJECTILE1.SPEED
-	
+		}
 
 	}
 }
@@ -115,7 +139,9 @@ function movePlayer(){
 		player.xPosition += player.speed
 		}
 }
-function shield(){
+function shieldFunction(){
+	shield.xPosition=player.xPosition-10
+	shield.yPosition=player.yPosition-10
 	if(parryCooldown>0){
 		parryCooldown-=1
 	}
@@ -127,7 +153,7 @@ parry-=1
 	}
 else if(shieldPressed==true){
 	ctx.fillStyle = "grey"
-ctx.fillRect(player.xPosition-10,player.yPosition-10,40,2)
+ctx.fillRect(shield.xPosition,shield.yPosition,shield.width,shield.height)
 }
 }
 window.addEventListener('keydown', keyDownFunction)
@@ -248,3 +274,21 @@ function keyUpFunction(keyboardEvent){
 	//		playerSpeed=1
 	//}
 	}
+//collisions ahead
+function shieldHit(projecX, projecY){
+	("shield?")
+	// Rectangular collision detection between the projectiles and the shield
+	if(
+		shieldPressed == true &&
+		shield.xPosition + shield.width > projecX && 
+		shield.xPosition < projecX+PROJECTILE1.WIDTH &&
+		shield.yPosition+ shield.height > projecY && 
+		shield.yPosition < PROJECTILE1.WIDTH
+	){
+		// The raindrop has hit the umbrella, return true
+		return(true)
+	}else{
+		// The raindrop has not hit the umbrella, return false
+		return(false)
+	}
+}
