@@ -79,11 +79,13 @@ drawProjectiles()
 		console.log("checking collision")
 		if (shieldHit(projecArray[projecNumber].xPosition, projecArray[projecNumber].yPosition)){ // Check the drop's xPosition and yPosition
 		  // Change the umbrella color
-		  
+		  console.log("spliced?")
 		   projecArray.splice(projecNumber,1)	
-		   console.log("spliced?")		// Reset the yPosition to the top
+		   		// Reset the yPosition to the top
+		
 		}
-		projecNumber ++ // Do the next drop
+		 // Do the next drop
+		 projecNumber ++
 	}
 }
 function drawProjectiles(){
@@ -276,19 +278,22 @@ function keyUpFunction(keyboardEvent){
 	}
 //collisions ahead
 function shieldHit(projecX, projecY){
-	("shield?")
+
 	// Rectangular collision detection between the projectiles and the shield
 	if(
 		shieldPressed == true &&
 		shield.xPosition + shield.width > projecX && 
 		shield.xPosition < projecX+PROJECTILE1.WIDTH &&
 		shield.yPosition+ shield.height > projecY && 
-		shield.yPosition < PROJECTILE1.WIDTH
+		shield.yPosition < projecY+PROJECTILE1.HEIGHT
 	){
 		// The raindrop has hit the umbrella, return true
+		
 		return(true)
+		
 	}else{
 		// The raindrop has not hit the umbrella, return false
+		
 		return(false)
 	}
 }
