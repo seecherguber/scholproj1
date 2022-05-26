@@ -87,6 +87,19 @@ drawProjectiles()
 		 // Do the next drop
 		 projecNumber ++
 	}
+	var projecNumber = 0 // Start at drop 0
+	while (projecNumber < projecArray.length){ // Keep going until you get to the last drop
+		console.log("checking parry collision")
+		if (parryHit(projecArray[projecNumber].xPosition, projecArray[projecNumber].yPosition)){ // Check the drop's xPosition and yPosition
+		  // Change the umbrella color
+		  console.log("parried?")
+		   projecArray[projecNumber].parried=true	
+		   		// Reset the yPosition to the top
+		
+		}
+		 // Do the next drop
+		 projecNumber ++
+	}
 }
 function drawProjectiles(){
 	var projecNumber = 0 // Start at drop 0
@@ -120,6 +133,8 @@ class Projectile{
 		if(this.parried==false){
 		this.yPosition += PROJECTILE1.SPEED
 		}
+		if(this.parried==true)
+		this.yPosition -= PROJECTILE1.SPEED+0.5
 
 	}
 }
@@ -142,6 +157,7 @@ function movePlayer(){
 		}
 }
 function shieldFunction(){
+	console.log(parryCooldown)
 	shield.xPosition=player.xPosition-10
 	shield.yPosition=player.yPosition-10
 	if(parryCooldown>0){
@@ -282,6 +298,7 @@ function shieldHit(projecX, projecY){
 	// Rectangular collision detection between the projectiles and the shield
 	if(
 		shieldPressed == true &&
+		parry==0	&&
 		shield.xPosition + shield.width > projecX && 
 		shield.xPosition < projecX+PROJECTILE1.WIDTH &&
 		shield.yPosition+ shield.height > projecY && 
@@ -289,6 +306,27 @@ function shieldHit(projecX, projecY){
 	){
 		// The raindrop has hit the umbrella, return true
 		
+		return(true)
+		
+	}else{
+		// The raindrop has not hit the umbrella, return false
+		
+		return(false)
+	}
+}
+function parryHit(projecX, projecY){
+
+	// Rectangular collision detection between the projectiles and the shield
+	if(
+		shieldPressed == true &&
+		parry>0	&&
+		shield.xPosition-5 + shield.width+10 > projecX && 
+		shield.xPosition-5 < projecX+PROJECTILE1.WIDTH &&
+		shield.yPosition-5+ shield.height > projecY && 
+		shield.yPosition-5 < projecY+PROJECTILE1.HEIGHT
+	){
+		// The raindrop has hit the umbrella, return true
+		parryCooldown=0
 		return(true)
 		
 	}else{
