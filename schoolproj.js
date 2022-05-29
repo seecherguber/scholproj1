@@ -32,6 +32,13 @@ const PROJECTILE1 = {
 	WIDTH:2,
 	SPEED:1
 }
+const ENEMY1={
+	WIDTH:20,
+	HEIGHT:20,
+	SPEED:1,
+	
+}
+var enemyArray = []
 var projecArray = []
 var dashCooldown = 0
 var parryCooldown = 0
@@ -44,6 +51,7 @@ function startCanvas(){
 	ctx=document.getElementById("myCanvas").getContext("2d")
 	// Set up the animation with an interval timer.
 	setInterval(updateCanvas, 10)
+	makeEnemy(0,10)
 }
 
 function updateCanvas(){
@@ -65,6 +73,10 @@ drawPlayer()
 movePlayer()
 shieldFunction()
 drawProjectiles()
+//move the enemy
+//draw the enemy
+drawEnemy()
+
 	while (lifeCount < lives){
 		ctx.fillStyle = "red"
 		ctx.fillRect(10+lifeCount*35, 10, 20,20) // Draw the life, use the lifeCounter to control the position
@@ -101,6 +113,16 @@ drawProjectiles()
 		 projecNumber ++
 	}
 }
+var projecNumber = 0
+while(projecNumber < projecArray.length){
+	console.log('checking projectile collision with player')
+	if(projectileHit(projecArray[projecNumber].xPosition, projecArray[projecNumber].yPosition)){
+		console.log('projectile hit player')
+		lives--
+		projecArray.splice(projecNumber,1)
+	}
+	projecNumber++
+}
 function drawProjectiles(){
 	var projecNumber = 0 // Start at drop 0
 	while (projecNumber < projecArray.length){ // Keep going until you get to the last drop
@@ -122,11 +144,11 @@ function drawProjectiles(){
 }
 class Projectile{ 
 	
-	constructor(x){
+	constructor(x,y){
 		
 		this.xPosition = x
 		
-		this.yPosition = 0
+		this.yPosition = y
 		this.parried = false
 	}
 	moveProjectile(){
@@ -136,6 +158,31 @@ class Projectile{
 		if(this.parried==true)
 		this.yPosition -= PROJECTILE1.SPEED+0.5
 
+	}
+}
+class Enemy{
+	constructor(x,y){
+		this.xPosition = x
+		this.yPosition = y
+		this.direction = 'right'
+		this.colour = "grey"
+	}
+	moveEnemy(){
+		if(this.xPosition+ENEMY1.WIDTH>WIDTH){
+			this.xPosition = WIDTH-ENEMY1.WIDTH
+			this.direction = "left"
+		}
+		if(this.xPosition<0){
+			this.xPosition = 0
+			this.direction = "right"
+		}
+		if(this.direction=="left"){
+			this.xPosition -= ENEMY1.SPEED
+		}
+		if(this.direction=="right"){
+			this.xPosition += ENEMY1.SPEED
+		}
+		
 	}
 }
 function drawPlayer(){
@@ -174,6 +221,17 @@ else if(shieldPressed==true){
 ctx.fillRect(shield.xPosition,shield.yPosition,shield.width,shield.height)
 }
 }
+function nemy(){
+	var enedrawEmyNumber=0
+	while(enemyNumber<enemyArray.length){
+	ctx.fillStyle=enemyArray[enemyNumber].colour
+	ctx.fillRect(enemyArray[enemyNumber].xPosition,enemyArray[enemyNumber].yPosition,ENEMY1.WIDTH,ENEMY1.HEIGHT)
+}
+}
+
+function makeEnemy(x,y){
+	enemyArray.push(new Enemy(x,y))
+}
 window.addEventListener('keydown', keyDownFunction)
 function keyDownFunction(keyboardEvent){
 	var keyDown = keyboardEvent.key			//new movement code
@@ -207,7 +265,7 @@ function keyDownFunction(keyboardEvent){
 		
 		break;
 		case "w":
-			projecArray.push(new Projectile(50))
+			
 		
 			if(parryCooldown==0&&shieldPressed==false){//shieldPressed is there so it doesnt give parry frames mid block
 				parry = 20
@@ -332,6 +390,23 @@ function parryHit(projecX, projecY){
 	}else{
 		// The raindrop has not hit the umbrella, return false
 		
+		return(false)
+	}
+
+}
+function projectileHit(x, y){
+	// rectangular collision detection between the projectiles and the player
+	if(
+		player.xPosition + player.width > x && 
+		player.xPosition < x+PROJECTILE1.WIDTH &&
+		player.yPosition + player.height > y && 
+		player.yPosition < y+PROJECTILE1.HEIGHT
+	){
+		// The raindrop has hit the umbrella, return true
+		return(true)
+		
+	}
+	else{
 		return(false)
 	}
 }
