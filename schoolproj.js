@@ -1,7 +1,8 @@
 /*
 */
-const WIDTH = 1000
-const HEIGHT = 500
+console.log("started")
+const WIDTH = 500
+const HEIGHT = 900
 //const PLAYERWIDTH = 20 //placeholder
 //const PLAYERHEIGHT = 20 //placeholder
 //const KNIFE1WIDTH = 1 //plc hldr
@@ -12,9 +13,9 @@ const HEIGHT = 500
 var player = {
 	width:20,
 	height:20,
-	speed:0.5,
-	xPosition:20,
-	yPosition:500-20-5, //HEIGHT-player.height-5
+	speed:1,
+	xPosition:200,
+	yPosition:HEIGHT-25, //HEIGHT-player.height-5
 	colour: "purple"
 }
 var shield = {
@@ -35,7 +36,7 @@ const PROJECTILE1 = {
 const ENEMY1={
 	WIDTH:20,
 	HEIGHT:20,
-	SPEED:1,
+	SPEED:0.25,
 	
 }
 var enemyArray = []
@@ -51,7 +52,7 @@ function startCanvas(){
 	ctx=document.getElementById("myCanvas").getContext("2d")
 	// Set up the animation with an interval timer.
 	setInterval(updateCanvas, 10)
-	makeEnemy(0,10)
+	makeEnemy(0,30)
 }
 
 function updateCanvas(){
@@ -75,7 +76,7 @@ shieldFunction()
 drawProjectiles()
 //move the enemy
 //draw the enemy
-drawEnemy()
+enemyFunction()
 
 	while (lifeCount < lives){
 		ctx.fillStyle = "red"
@@ -166,6 +167,7 @@ class Enemy{
 		this.yPosition = y
 		this.direction = 'right'
 		this.colour = "grey"
+		this.enemyShootCooldown = 100
 	}
 	moveEnemy(){
 		if(this.xPosition+ENEMY1.WIDTH>WIDTH){
@@ -184,6 +186,14 @@ class Enemy{
 		}
 		
 	}
+	enemyShoot(){
+		
+		if (this.enemyShootCooldown==0){
+		projecArray.push(new Projectile(this.xPosition+ENEMY1.WIDTH/2,this.yPosition+ENEMY1.HEIGHT))
+		this.enemyShootCooldown = 100
+	}
+	this.enemyShootCooldown--
+}
 }
 function drawPlayer(){
 	if(player.xPosition+player.width>WIDTH){
@@ -221,12 +231,24 @@ else if(shieldPressed==true){
 ctx.fillRect(shield.xPosition,shield.yPosition,shield.width,shield.height)
 }
 }
-function nemy(){
-	var enedrawEmyNumber=0
+function enemyFunction(){
+	var enemyNumber=0
 	while(enemyNumber<enemyArray.length){
 	ctx.fillStyle=enemyArray[enemyNumber].colour
 	ctx.fillRect(enemyArray[enemyNumber].xPosition,enemyArray[enemyNumber].yPosition,ENEMY1.WIDTH,ENEMY1.HEIGHT)
-}
+	enemyNumber++
+};
+	var enemyNumber=0
+	while(enemyNumber<enemyArray.length){
+		enemyArray[enemyNumber].moveEnemy()
+		enemyNumber++
+	}
+	var enemyNumber=0
+	while(enemyNumber<enemyArray.length){
+		enemyArray[enemyNumber].enemyShoot()
+		enemyNumber++
+
+	}
 }
 
 function makeEnemy(x,y){
