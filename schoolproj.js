@@ -31,7 +31,7 @@ var shieldPressed = false
 const PROJECTILE1 = {
 	HEIGHT: 10,
 	WIDTH:2,
-	SPEED:1
+	SPEED:3
 }
 const ENEMY1={
 	WIDTH:20,
@@ -52,7 +52,7 @@ function startCanvas(){
 	ctx=document.getElementById("myCanvas").getContext("2d")
 	// Set up the animation with an interval timer.
 	setInterval(updateCanvas, 10)
-	makeEnemy(0,30)
+	makeEnemy(20,30)
 }
 
 function updateCanvas(){
@@ -157,7 +157,7 @@ class Projectile{
 		this.yPosition += PROJECTILE1.SPEED
 		}
 		if(this.parried==true)
-		this.yPosition -= PROJECTILE1.SPEED+0.5
+		this.yPosition -= PROJECTILE1.SPEED*2
 
 	}
 }
@@ -168,8 +168,11 @@ class Enemy{
 		this.direction = 'right'
 		this.colour = "grey"
 		this.enemyShootCooldown = 100
+		this.enemyMoveCooldown = 200
 	}
 	moveEnemy(){
+		if(this.enemyMoveCooldown==0){
+			var random = Math.random()
 		if(this.xPosition+ENEMY1.WIDTH>WIDTH){
 			this.xPosition = WIDTH-ENEMY1.WIDTH
 			this.direction = "left"
@@ -178,14 +181,22 @@ class Enemy{
 			this.xPosition = 0
 			this.direction = "right"
 		}
+		if(random<0.5){
 		if(this.direction=="left"){
-			this.xPosition -= ENEMY1.SPEED
+			this.xPosition -= ENEMY1.WIDTH
 		}
 		if(this.direction=="right"){
-			this.xPosition += ENEMY1.SPEED
-		}
-		
+			this.xPosition += ENEMY1.WIDTH
+		}}
+		if(random>0.5){
+			this.yPosition+=ENEMY1.WIDTH
 	}
+	this.enemyMoveCooldown = 200
+	}
+	else{
+		this.enemyMoveCooldown--
+	}
+}
 	enemyShoot(){
 		
 		if (this.enemyShootCooldown==0){
