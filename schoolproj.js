@@ -28,16 +28,16 @@ var parry = 0
 var leftPressed = false
 var rightPressed = false
 var shieldPressed = false
+var playerDamaged = false
 const PROJECTILE1 = {
 	HEIGHT: 10,
 	WIDTH:2,
-	SPEED:3
+	SPEED:5,
 }
 const ENEMY1={
 	WIDTH:20,
 	HEIGHT:20,
-	SPEED:0.25,
-	
+	SPEED:10,
 }
 var enemyArray = []
 var projecArray = []
@@ -82,8 +82,6 @@ enemyFunction()
 		ctx.fillStyle = "red"
 		ctx.fillRect(10+lifeCount*35, 10, 20,20) // Draw the life, use the lifeCounter to control the position
 		lifeCount++ // Move to the next life
-
-	
 	}
 	//collision stuff
 
@@ -113,17 +111,19 @@ enemyFunction()
 		 // Do the next drop
 		 projecNumber ++
 	}
-}
-var projecNumber = 0
+	var projecNumber = 0
 while(projecNumber < projecArray.length){
 	console.log('checking projectile collision with player')
 	if(projectileHit(projecArray[projecNumber].xPosition, projecArray[projecNumber].yPosition)){
 		console.log('projectile hit player')
 		lives--
 		projecArray.splice(projecNumber,1)
+		playerDamaged=true
 	}
 	projecNumber++
 }
+}
+
 function drawProjectiles(){
 	var projecNumber = 0 // Start at drop 0
 	while (projecNumber < projecArray.length){ // Keep going until you get to the last drop
@@ -168,20 +168,26 @@ class Enemy{
 		this.direction = 'right'
 		this.colour = "grey"
 		this.enemyShootCooldown = 100
-		this.enemyMoveCooldown = 200
+		this.enemyMoveCooldown = 50
 	}
 	moveEnemy(){
 		if(this.enemyMoveCooldown==0){
 			var random = Math.random()
 		if(this.xPosition+ENEMY1.WIDTH>WIDTH){
 			this.xPosition = WIDTH-ENEMY1.WIDTH
-			this.direction = "left"
+			
 		}
 		if(this.xPosition<0){
 			this.xPosition = 0
-			this.direction = "right"
+		
 		}
 		if(random<0.5){
+			if(player.xPosition<this.xPosition){
+				this.direction="left"
+			}
+			if(player.xPosition>this.xPosition){
+				this.direction="right"
+			}
 		if(this.direction=="left"){
 			this.xPosition -= ENEMY1.WIDTH
 		}
@@ -191,7 +197,7 @@ class Enemy{
 		if(random>0.5){
 			this.yPosition+=ENEMY1.WIDTH
 	}
-	this.enemyMoveCooldown = 200
+	this.enemyMoveCooldown = 50
 	}
 	else{
 		this.enemyMoveCooldown--
@@ -213,8 +219,18 @@ function drawPlayer(){
 	if(player.xPosition<0){
 		player.xPosition = 0
 	}
+	if(dashCooldown==0){
+		player.colour="purple"
+	}
+	if(dashCooldown>0){
+		player.colour="red"
+	}
+	if(playerDamaged==true){
+		player.colour="white"
+		playerDamaged=false
+	}
 	ctx.fillStyle=player.colour
-	ctx.fillRect(player.xPosition,player.yPosition,player.width,player.height)
+	ctx.fillRect(player.xPosition, player.yPosition, player.width, player.height)
 }
 function movePlayer(){
 	if(leftPressed==true){
@@ -245,9 +261,9 @@ ctx.fillRect(shield.xPosition,shield.yPosition,shield.width,shield.height)
 function enemyFunction(){
 	var enemyNumber=0
 	while(enemyNumber<enemyArray.length){
-	ctx.fillStyle=enemyArray[enemyNumber].colour
-	ctx.fillRect(enemyArray[enemyNumber].xPosition,enemyArray[enemyNumber].yPosition,ENEMY1.WIDTH,ENEMY1.HEIGHT)
-	enemyNumber++
+		ctx.fillStyle=enemyArray[enemyNumber].colour
+		ctx.fillRect(enemyArray[enemyNumber].xPosition,enemyArray[enemyNumber].yPosition,ENEMY1.WIDTH,ENEMY1.HEIGHT)
+		enemyNumber++
 };
 	var enemyNumber=0
 	while(enemyNumber<enemyArray.length){
@@ -416,12 +432,12 @@ function parryHit(projecX, projecY){
 		shield.yPosition-5+ shield.height > projecY && 
 		shield.yPosition-5 < projecY+PROJECTILE1.HEIGHT
 	){
-		// The raindrop has hit the umbrella, return true
+		// The projectile has hit the shield, return true
 		parryCooldown=0
 		return(true)
 		
 	}else{
-		// The raindrop has not hit the umbrella, return false
+		// The projectile has not hit the sheild, return false
 		
 		return(false)
 	}
@@ -435,7 +451,7 @@ function projectileHit(x, y){
 		player.yPosition + player.height > y && 
 		player.yPosition < y+PROJECTILE1.HEIGHT
 	){
-		// The raindrop has hit the umbrella, return true
+		// the projectile has hit the player, return true
 		return(true)
 		
 	}
