@@ -53,6 +53,7 @@ function startCanvas(){
 	// Set up the animation with an interval timer.
 	setInterval(updateCanvas, 10)
 	makeEnemy(20,30)
+	makeEnemy(20,30)
 }
 
 function updateCanvas(){
@@ -122,6 +123,18 @@ while(projecNumber < projecArray.length){
 	}
 	projecNumber++
 }
+	
+	var enemyNumber = 0
+	while(enemyNumber < enemyArray.length){
+		var projecNumber = 0
+		while(projecNumber < projecArray.length){
+		if (projectileHitEnemy(enemyArray[enemyNumber].xPosition, enemyArray[enemyNumber].yPosition, projecArray[projecNumber].xPosition, projecArray[projecNumber].yPosition, projecArray[projecNumber].parried)){
+			console.log('projectile hit enemy'+enemyNumber)
+			enemyArray.splice(enemyNumber,1)}
+			projecNumber++
+		}
+		enemyNumber++
+}
 }
 
 function drawProjectiles(){
@@ -169,6 +182,7 @@ class Enemy{
 		this.colour = "grey"
 		this.enemyShootCooldown = 100
 		this.enemyMoveCooldown = 50
+	
 	}
 	moveEnemy(){
 		if(this.enemyMoveCooldown==0){
@@ -264,7 +278,7 @@ function enemyFunction(){
 		ctx.fillStyle=enemyArray[enemyNumber].colour
 		ctx.fillRect(enemyArray[enemyNumber].xPosition,enemyArray[enemyNumber].yPosition,ENEMY1.WIDTH,ENEMY1.HEIGHT)
 		enemyNumber++
-};
+}
 	var enemyNumber=0
 	while(enemyNumber<enemyArray.length){
 		enemyArray[enemyNumber].moveEnemy()
@@ -452,6 +466,23 @@ function projectileHit(x, y){
 		player.yPosition < y+PROJECTILE1.HEIGHT
 	){
 		// the projectile has hit the player, return true
+		return(true)
+		
+	}
+	else{
+		return(false)
+	}
+}
+function projectileHitEnemy(enemyX, enemyY, projectileX, projectileY, projectileParried){
+	// rectangular collision detection between the projectiles and an enemy
+	if(
+		enemyX + ENEMY1.WIDTH > projectileX &&
+		enemyX < projectileX+PROJECTILE1.WIDTH &&
+		enemyY + ENEMY1.HEIGHT > projectileY && 
+		enemyY < projectileY+PROJECTILE1.HEIGHT
+		&& projectileParried == true
+	){
+		// the projectile has hit the enemy, return true
 		return(true)
 		
 	}
