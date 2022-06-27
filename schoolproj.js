@@ -1,4 +1,8 @@
 /*
+
+
+
+
 */
 console.log("started")
 const WIDTH = 500
@@ -52,8 +56,13 @@ function startCanvas(){
 	ctx=document.getElementById("myCanvas").getContext("2d")
 	// Set up the animation with an interval timer.
 	setInterval(updateCanvas, 10)
-	makeEnemy(20,30)
-	makeEnemy(20,30)
+	var enemyNumber = 0 // Start at enemy 0
+	while (enemyNumber < 5){ // Keep going until you get to the last Enemy
+		makeEnemy(Math.random()*WIDTH,20)
+		enemyNumber ++ // Do the next enemy
+	}
+
+console.log(enemyArray)
 }
 
 function updateCanvas(){
@@ -243,8 +252,10 @@ function drawPlayer(){
 		player.colour="white"
 		playerDamaged=false
 	}
+	if(lives>0){
 	ctx.fillStyle=player.colour
 	ctx.fillRect(player.xPosition, player.yPosition, player.width, player.height)
+	}
 }
 function movePlayer(){
 	if(leftPressed==true){
@@ -361,36 +372,6 @@ function keyDownFunction(keyboardEvent){
 		)
 	}
 
-	////Old movement code
-	//if (keyDown=="a"){
-	//	leftPressed = true
-	//	lastDirectionRight = false
-	//	lastDirectionLeft = true
-	//}
-	//if (keyDown=="d"){
-	//	rightPressed = true,
-	//	lastDirectionLeft = false
-	//	lastDirectionRight = true
-	//}
-//	if(leftPressed==true&&player.xPosition>0){
-//		player.xPosition -= player.speed
-//	}
-//	if(rightPressed==true&&player.xPosition<WIDTH-player.width){
-//		player.xPosition += player.speed
-//		}
-//		if(keyDown=="Shift"&&lastDirectionLeft==true&&player.xPosition>0){
-//			player.xPosition -= player.speed+100
-//		}
-//		if(keyDown=="Shift"&&lastDirectionRight==true&&player.xPosition<WIDTH-player.width){
-//			player.xPosition += player.speed+100
-//		
-//			}
-
-	//if (keyDown=="a"&&playerSpeed<5||keyDown=="d"&&playerSpeed<5){
-	//		playerSpeed=playerSpeed+0.5
-	//}
-	
-	
 }
 window.addEventListener('keyup', keyUpFunction)
 
