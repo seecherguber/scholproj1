@@ -7,19 +7,12 @@
 console.log("started")
 const WIDTH = 500
 const HEIGHT = 900
-//const PLAYERWIDTH = 20 //placeholder
-//const PLAYERHEIGHT = 20 //placeholder
-//const KNIFE1WIDTH = 1 //plc hldr
-//const KNIFE1HEIGHT = 1 //placeholder
-//var playerXPosition = 300
-//var playerYPosition = HEIGHT-PLAYERHEIGHT-5
-//var playerSpeed = 5
 var player = {
 	width:20,
 	height:20,
 	speed:1,
 	xPosition:200,
-	yPosition:HEIGHT-25, //HEIGHT-player.height-5
+	yPosition:HEIGHT-25,
 	colour: "purple"
 }
 var shield = {
@@ -32,6 +25,7 @@ var parry = 0
 var leftPressed = false
 var rightPressed = false
 var shieldPressed = false
+var spacePressed = false
 var playerDamaged = false
 const PROJECTILE1 = {
 	HEIGHT: 10,
@@ -44,29 +38,40 @@ const ENEMY1={
 	SPEED:10,
 }
 var enemyArray = []
+var enemySpawnCooldown = 0
+var enemySpawnCooldownNumber = 1000
 var projecArray = []
 var dashCooldown = 0
 var parryCooldown = 0
 var ctx
 var lives = 3
+var gameState = "menu"
 
 window.onload=startCanvas
-
 function startCanvas(){
 	ctx=document.getElementById("myCanvas").getContext("2d")
 	// Set up the animation with an interval timer.
-	setInterval(updateCanvas, 10)
-	var enemyNumber = 0 // Start at enemy 0
-	while (enemyNumber < 5){ // Keep going until you get to the last Enemy
-		makeEnemy(Math.random()*WIDTH,20)
-		enemyNumber ++ // Do the next enemy
+	setInterval(()=>{
+	if(gameState == "menu"){
+		mainMenu()
 	}
-
-console.log(enemyArray)
+	if(gameState == "game"){
+		game()
+	}
+	},10)
+}
+function mainMenu(){
+	ctx.fillStyle = "black"
+	ctx.fillRect(0,0,WIDTH,HEIGHT)
+	ctx.fillStyle = "white"
+	ctx.font = "30px Arial"
+	ctx.fillText("Press Space to Start",WIDTH/2-150,HEIGHT/2)
+	if(spacePressed==true){
+		gameState="game"
+	}
 }
 
-function updateCanvas(){
-	
+function game(){	
 	//console.log(player)
 	// Clear the scren
 	ctx.fillStyle = "black"
@@ -87,7 +92,7 @@ drawProjectiles()
 //move the enemy
 //draw the enemy
 enemyFunction()
-
+enemySpawnFunction()
 	while (lifeCount < lives){
 		ctx.fillStyle = "red"
 		ctx.fillRect(10+lifeCount*35, 10, 20,20) // Draw the life, use the lifeCounter to control the position
@@ -95,19 +100,19 @@ enemyFunction()
 	}
 	//collision stuff
 
-	var projecNumber = 0 // Start at drop 0
-	while (projecNumber < projecArray.length){ // Keep going until you get to the last drop
-		console.log("checking collision")
-		if (shieldHit(projecArray[projecNumber].xPosition, projecArray[projecNumber].yPosition)){ // Check the drop's xPosition and yPosition
-		  // Change the umbrella color
-		  console.log("spliced?")
-		   projecArray.splice(projecNumber,1)	
-		   		// Reset the yPosition to the top
-		
-		}
-		 // Do the next drop
-		 projecNumber ++
-	}
+	//var projecNumber = 0 // Start at drop 0
+	//while (projecNumber < projecArray.length){ // Keep going until you get to the last drop
+	//	console.log("checking collision with projectile & shield")
+	//	if (shieldHit(projecArray[projecNumber].xPosition, projecArray[projecNumber].yPosition)){ // Check the drop's xPosition and yPosition
+	//	  // delete the projectile
+	//	  console.log("spliced?")
+	//	   projecArray.splice(projecNumber,1)	
+	//	   		// Reset the yPosition to the top
+	//	
+	//	}
+	//	 // Do the next drop
+	//	 projecNumber ++
+	//}
 	var projecNumber = 0 // Start at drop 0
 	while (projecNumber < projecArray.length){ // Keep going until you get to the last drop
 		console.log("checking parry collision")
@@ -115,8 +120,7 @@ enemyFunction()
 		  // Change the umbrella color
 		  console.log("parried?")
 		   projecArray[projecNumber].parried=true	
-		   		// Reset the yPosition to the top
-		
+		   		// Reset the yPosition to the top		
 		}
 		 // Do the next drop
 		 projecNumber ++
@@ -132,7 +136,6 @@ while(projecNumber < projecArray.length){
 	}
 	projecNumber++
 }
-	
 	var enemyNumber = 0
 	while(enemyNumber < enemyArray.length){
 		var projecNumber = 0
@@ -161,16 +164,12 @@ function drawProjectiles(){
 		if(projecArray[projecNumber].yPosition>HEIGHT){
 			projecArray.splice(projecNumber,1)
 		}
-		
 		projecNumber ++ // Do the next drop
 	}
 }
-class Projectile{ 
-	
+class Projectile{
 	constructor(x,y){
-		
 		this.xPosition = x
-		
 		this.yPosition = y
 		this.parried = false
 	}
@@ -180,7 +179,6 @@ class Projectile{
 		}
 		if(this.parried==true)
 		this.yPosition -= PROJECTILE1.SPEED*2
-
 	}
 }
 class Enemy{
@@ -198,7 +196,6 @@ class Enemy{
 			var random = Math.random()
 		if(this.xPosition+ENEMY1.WIDTH>WIDTH){
 			this.xPosition = WIDTH-ENEMY1.WIDTH
-			
 		}
 		if(this.xPosition<0){
 			this.xPosition = 0
@@ -227,7 +224,6 @@ class Enemy{
 	}
 }
 	enemyShoot(){
-		
 		if (this.enemyShootCooldown==0){
 		projecArray.push(new Projectile(this.xPosition+ENEMY1.WIDTH/2,this.yPosition+ENEMY1.HEIGHT))
 		this.enemyShootCooldown = 100
@@ -278,10 +274,10 @@ ctx.fillRect(player.xPosition-15,player.yPosition-15,50,2)
 parry-=1
 
 	}
-else if(shieldPressed==true){
-	ctx.fillStyle = "grey"
-ctx.fillRect(shield.xPosition,shield.yPosition,shield.width,shield.height)
-}
+//else if(shieldPressed==true){
+//	ctx.fillStyle = "grey"
+//ctx.fillRect(shield.xPosition,shield.yPosition,shield.width,shield.height)
+//}
 }
 function enemyFunction(){
 	var enemyNumber=0
@@ -302,7 +298,23 @@ function enemyFunction(){
 
 	}
 }
+function enemySpawnFunction(){
 
+	if(enemySpawnCooldown==0){
+		var random = Math.random()
+		if(random<0.5){
+			makeEnemy(0,0)
+		}
+		if(random>0.5){
+			makeEnemy(WIDTH,0)
+		}
+		enemySpawnCooldown=enemySpawnCooldownNumber
+		enemySpawnCooldownNumber--
+	}
+	else{
+		enemySpawnCooldown--
+	}
+}
 function makeEnemy(x,y){
 	enemyArray.push(new Enemy(x,y))
 }
@@ -336,20 +348,18 @@ function keyDownFunction(keyboardEvent){
 				player.xPosition += 100
 				cooldown()
 				}
-		
 		break;
 		case "w":
-			
-		
 			if(parryCooldown==0&&shieldPressed==false){//shieldPressed is there so it doesnt give parry frames mid block
-				parry = 20
+				parry = 12
 				
 				parryCooldown = 100
 			}
 			shieldPressed = true
+		case " ":
+			spacePressed=true
 		default:
 			break;
-
 	}
 	function cooldown(){
 			dashCooldown=10
@@ -364,14 +374,11 @@ function keyDownFunction(keyboardEvent){
 		setInterval(function(){ //cooldown cooldown
 			if(dashCooldown==0){
 			player.colour="purple"
-	
 					clearInterval(cooldownInterval)
-
 			}
 		} ,10
 		)
 	}
-
 }
 window.addEventListener('keyup', keyUpFunction)
 
@@ -387,7 +394,6 @@ function keyUpFunction(keyboardEvent){
 		}
 	if(keyUp=="w"||keyUp=="W"){
 		shieldPressed = false
-	
 		parry=0
 	}
 	//	if (keyUp=="a"||keyUp=="d"){
@@ -407,9 +413,7 @@ function shieldHit(projecX, projecY){
 		shield.yPosition < projecY+PROJECTILE1.HEIGHT
 	){
 		// The raindrop has hit the umbrella, return true
-		
 		return(true)
-		
 	}else{
 		// The raindrop has not hit the umbrella, return false
 		
