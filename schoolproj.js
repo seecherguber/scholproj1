@@ -80,9 +80,20 @@ function game(){
 	// Every frame, draw all of the lives
 	// This loop will draw one red square for each life left
 	lifeCount = 0 // Start at the first life (counting from zero)
+	while (lifeCount < lives){
+		ctx.fillStyle = "red"
+		ctx.fillRect(10+lifeCount*35, 10, 20,20) // Draw the life, use the lifeCounter to control the position
+		lifeCount++ // Move to the next life
+	}
+	//this will draw the dash cooldown as a purple bar
 	ctx.fillStyle = "purple"
-	ctx.fillRect(120,10,dashCooldown*10,20)
+	ctx.fillRect(120,10,dashCooldown/5,20)
 	console.log("number of projectiles is, "+projecArray.length)
+	//this will draw the parry cooldown as a white bar
+	if(parry==0){
+	ctx.fillStyle = "white"
+	ctx.fillRect(320,10,parryCooldown,20)
+	}
 // Draw the player
 drawPlayer()
 //move the player
@@ -93,11 +104,7 @@ drawProjectiles()
 //draw the enemy
 enemyFunction()
 enemySpawnFunction()
-	while (lifeCount < lives){
-		ctx.fillStyle = "red"
-		ctx.fillRect(10+lifeCount*35, 10, 20,20) // Draw the life, use the lifeCounter to control the position
-		lifeCount++ // Move to the next life
-	}
+	
 	//collision stuff
 
 	//var projecNumber = 0 // Start at drop 0
@@ -303,10 +310,10 @@ function enemySpawnFunction(){
 	if(enemySpawnCooldown==0){
 		var random = Math.random()
 		if(random<0.5){
-			makeEnemy(0,0)
+			makeEnemy(0,30)
 		}
 		if(random>0.5){
-			makeEnemy(WIDTH,0)
+			makeEnemy(WIDTH,30)
 		}
 		enemySpawnCooldown=enemySpawnCooldownNumber
 		enemySpawnCooldownNumber--
@@ -362,15 +369,15 @@ function keyDownFunction(keyboardEvent){
 			break;
 	}
 	function cooldown(){
-			dashCooldown=10
+			dashCooldown=500
 			if (dashCooldown>0){
 				player.colour = "red"
 		var cooldownInterval =	setInterval(function(){
 					if(dashCooldown>0){
-					dashCooldown=dashCooldown-0.0625
+					dashCooldown--
 					}	
 				}
-				,62.5)	}
+				,10)	}
 		setInterval(function(){ //cooldown cooldown
 			if(dashCooldown==0){
 			player.colour="purple"
