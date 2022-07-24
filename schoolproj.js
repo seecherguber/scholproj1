@@ -73,7 +73,16 @@ function mainMenu(){
 		gameState="game"
 	}
 }
-
+function gameOver(){
+	ctx.fillStyle = "black"
+	ctx.fillRect(0,0,WIDTH,HEIGHT)
+	ctx.fillStyle = "white"
+	ctx.font = "30px Arial"
+	ctx.fillText("Game Over, press space to restart, r to go to menu",WIDTH/2-150,HEIGHT/2)
+	if(spacePressed==true){
+		gameState="game"
+	}
+}
 function game(){	
 	//console.log(player)
 	// Clear the scren
@@ -87,6 +96,9 @@ function game(){
 		ctx.fillStyle = "red"
 		ctx.fillRect(10+lifeCount*35, 10, 20,20) // Draw the life, use the lifeCounter to control the position
 		lifeCount++ // Move to the next life
+	}
+	if (lives <= 0){
+		gameState = "gameOver"
 	}
 	//this will draw the dash cooldown as a purple bar
 	ctx.fillStyle = "purple"
