@@ -58,6 +58,9 @@ function startCanvas(){
 	if(gameState == "game"){
 		game()
 	}
+	if(gameState == "gameOver"){
+		gameOver()
+	}
 	},10)
 }
 function mainMenu(){
@@ -268,6 +271,7 @@ function movePlayer(){
 		player.xPosition += player.speed
 		}
 }
+
 function shieldFunction(){
 	console.log(parryCooldown)
 	shield.xPosition=player.xPosition-10
@@ -281,6 +285,7 @@ ctx.fillRect(player.xPosition-15,player.yPosition-15,50,2)
 parry-=1
 
 	}
+
 //else if(shieldPressed==true){
 //	ctx.fillStyle = "grey"
 //ctx.fillRect(shield.xPosition,shield.yPosition,shield.width,shield.height)
