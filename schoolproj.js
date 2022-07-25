@@ -74,13 +74,17 @@ function mainMenu(){
 	}
 }
 function gameOver(){
+	enemyArray.splice(0,enemyArray.length)
+	enemySpawnCooldownNumber = 1000
 	ctx.fillStyle = "black"
 	ctx.fillRect(0,0,WIDTH,HEIGHT)
 	ctx.fillStyle = "white"
 	ctx.font = "30px Arial"
-	ctx.fillText("Game Over, press space to restart, r to go to menu",WIDTH/2-150,HEIGHT/2)
+	ctx.fillText("Game Over, press space to restart, r to go to menu",0,HEIGHT/2)
 	if(spacePressed==true){
 		gameState="game"
+		lives=3
+		spacePressed=false
 	}
 }
 function game(){	
