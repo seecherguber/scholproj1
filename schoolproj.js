@@ -74,6 +74,7 @@ function mainMenu(){
 	}
 }
 function gameOver(){
+	projecArray.splice(0,projecArray.length)
 	enemyArray.splice(0,enemyArray.length)
 	enemySpawnCooldownNumber = 1000
 	ctx.fillStyle = "black"
@@ -126,19 +127,6 @@ enemySpawnFunction()
 	
 	//collision stuff
 
-	//var projecNumber = 0 // Start at drop 0
-	//while (projecNumber < projecArray.length){ // Keep going until you get to the last drop
-	//	console.log("checking collision with projectile & shield")
-	//	if (shieldHit(projecArray[projecNumber].xPosition, projecArray[projecNumber].yPosition)){ // Check the drop's xPosition and yPosition
-	//	  // delete the projectile
-	//	  console.log("spliced?")
-	//	   projecArray.splice(projecNumber,1)	
-	//	   		// Reset the yPosition to the top
-	//	
-	//	}
-	//	 // Do the next drop
-	//	 projecNumber ++
-	//}
 	var projecNumber = 0 // Start at drop 0
 	while (projecNumber < projecArray.length){ // Keep going until you get to the last drop
 		console.log("checking parry collision")
@@ -424,30 +412,15 @@ function keyUpFunction(keyboardEvent){
 		shieldPressed = false
 		parry=0
 	}
+	if(keyUp==" "){
+		spacePressed=false
+	}
 	//	if (keyUp=="a"||keyUp=="d"){
 	//		playerSpeed=1
 	//}
 	}
 //collisions ahead
-function shieldHit(projecX, projecY){
 
-	// Rectangular collision detection between the projectiles and the shield
-	if(
-		shieldPressed == true &&
-		parry==0	&&
-		shield.xPosition + shield.width > projecX && 
-		shield.xPosition < projecX+PROJECTILE1.WIDTH &&
-		shield.yPosition+ shield.height > projecY && 
-		shield.yPosition < projecY+PROJECTILE1.HEIGHT
-	){
-		// The raindrop has hit the umbrella, return true
-		return(true)
-	}else{
-		// The raindrop has not hit the umbrella, return false
-		
-		return(false)
-	}
-}
 function parryHit(projecX, projecY){
 
 	// Rectangular collision detection between the projectiles and the shield
