@@ -5,65 +5,69 @@
 
 */
 console.log("started")
-const WIDTH = 500
-const HEIGHT = 900
-var player = {
-	width:20,
-	height:20,
-	speed:1,
-	xPosition:200,
-	yPosition:HEIGHT-25,
-	colour: "purple"
+const WIDTH = 500//this is the width of the canvas
+const HEIGHT = 900//this is the height of the canvas
+var player = {//this is the player object
+	width:20,//this is the width of the player
+	height:20,//this is the height of the player
+	speed:1,//this is the speed of the player(how fast it moves)
+	xPosition:200,//this is the x position of the player
+	yPosition:HEIGHT-25,//this is the y position of the player
+	colour: "purple"//this is the colour of the player
 }
-var shield = {
-xPosition: player.xPosition-10	,
-yPosition: player.yPosition-10 ,
-width: 40,
-height: 2
+var shield = {//this is the shield object
+	xPosition: player.xPosition-10,//this is the x position of the shield
+	yPosition: player.yPosition-10,//this is the y position of the shield
+	width: 40,//this is the width of the shield
+	height: 2//this is the height of the shield
 }
-var parry = 0
-var leftPressed = false
-var rightPressed = false
-var shieldPressed = false
-var spacePressed = false
-var playerDamaged = false
-const PROJECTILE1 = {
-	HEIGHT: 10,
-	WIDTH:2,
-	SPEED:5,
+var parry = 0//this is the number of parry frames left
+var leftPressed = false//this is to track whether the left input is pressed
+var rightPressed = false//this is to track whether the right input is pressed
+var shieldPressed = false//this is to track whether the shield input is pressed
+var spacePressed = false//this is to track whether the spacebar is pressed
+var rPressed = false//this is to track whether the r key is pressed
+var iPressed = false//this is to track whether the i key is pressed
+var playerDamaged = false//this is to track whether the player has been damaged
+const PROJECTILE1 = {//this is the projectile object
+	HEIGHT: 10,//this is the height of the projectile
+	WIDTH:2,//this is the width of the projectile
+	SPEED:5,//this is the speed of the projectile
 }
-const ENEMY1={
-	WIDTH:20,
-	HEIGHT:20,
-	SPEED:10,
+const ENEMY1={//this is the enemy object
+	WIDTH:20,//this is the width of the enemy
+	HEIGHT:20,//this is the height of the enemy
+	SPEED:10,//this is how far an enemy travels when it moves[]
 }
-var enemyArray = []
+var enemyArray = []// Array of enemies
 var enemySpawnCooldown = 0//represents the time until the next enemy spawns
 var enemySpawnCooldownNumber = 1000//represents the amount of time used for the start of the enemySpawnCooldown variable
 var projecArray = []//this is where data for projectiles is stored
 var dashCooldown = 0//this represents the amount of time until you can dash
 var parryCooldown = 0//this represents the amount of time untill you can parry
-var ctx
-var lives = 3
-var gameState = "menu"
+var ctx//this is the canvas context
+var lives = 3//this is the number of lives the player has
+var gameState = "menu"//this is the state of the game
 
 window.onload=startCanvas
 function startCanvas(){
 	ctx=document.getElementById("myCanvas").getContext("2d")
-	// Set up the animation with an interval timer.
-	setInterval(()=>{
-	if(gameState == "menu"){
-		mainMenu()
-	}
-	if(gameState == "game"){
-		game()
-	}
-	if(gameState == "gameOver"){
-		gameOver()
-	}
+	setInterval(()=>{//this interval is used to update the game
+		if(gameState == "menu"){
+			mainMenu()
+		}
+		if(gameState == "game"){
+			game()
+		}
+		if(gameState == "gameOver"){
+			gameOver()
+		}
+		if(gameState == "instructions"){
+			instructions()
+		}
 	},10)
 }
-function mainMenu(){
+function mainMenu(){//this function displays the main menu
 	ctx.fillStyle = "black"
 	ctx.fillRect(0,0,WIDTH,HEIGHT)
 	ctx.fillStyle = "white"
@@ -72,71 +76,83 @@ function mainMenu(){
 	if(spacePressed==true){
 		gameState="game"
 	}
+	ctx.fillText("Press i to see instructions",WIDTH/2-175,HEIGHT/2+50)
+	if(iPressed==true){
+		gameState="instructions"
+	}
 }
-function gameOver(){
+function gameOver(){//this function displays the game over screen and resets information for the game
 	projecArray.splice(0,projecArray.length)
 	enemyArray.splice(0,enemyArray.length)
 	enemySpawnCooldownNumber = 1000
+	lives=3
 	ctx.fillStyle = "black"
 	ctx.fillRect(0,0,WIDTH,HEIGHT)
 	ctx.fillStyle = "white"
 	ctx.font = "30px Arial"
-	ctx.fillText("Game Over, press space to restart, r to go to menu",0,HEIGHT/2)
+	ctx.fillText("GAME OVER",160,HEIGHT/2)
+	ctx.fillText("Press Space to Restart",80,HEIGHT/2+50)
+	ctx.fillText("Press r to return to the main menu",20,HEIGHT/2+100)
 	if(spacePressed==true){
 		gameState="game"
-		lives=3
 		spacePressed=false
 	}
+	if(rPressed==true){
+		gameState="menu"
+		rPressed=false
+	}
 }
-function game(){	
+function instructions(){//this function displays the instructions
+	ctx.fillStyle = "black"
+	ctx.fillRect(0,0,WIDTH,HEIGHT)
+	ctx.fillStyle = "white"
+	ctx.font = "30px Arial"
+	ctx.fillText("INSTRUCTIONS",WIDTH/2-100,HEIGHT/2-100)
+	ctx.fillText("Use A and D to move",WIDTH/2-150,HEIGHT/2)
+	ctx.fillText("Use W to parry",WIDTH/2-150,HEIGHT/2+50)
+	ctx.fillText("Use Shift to dash",WIDTH/2-150,HEIGHT/2+100)
+	ctx.font="20px Arial"
+	ctx.fillText("a WHITE BAR represents the parry cooldown",20,90)
+	ctx.fillStyle= "red"
+	ctx.fillText("lives are displayed in the top left",20,60)
+	ctx.fillStyle= "purple"
+	ctx.fillText("a PURPLE BAR represents the dash cooldown",20,120)
+	drawPlayer()
+	movePlayer()
+	shieldFunction()
+	livesFunction()
+	drawCooldowns()
+}
+function game(){	//this function is used to run/display the main game loop
 	//console.log(player)
 	// Clear the scren
 	ctx.fillStyle = "black"
 	ctx.fillRect(0, 0, WIDTH, HEIGHT)
-	// the lives system is adapted from a resource from the class
-	// Every frame, draw all of the lives
-	// This loop will draw one red square for each life left
-	lifeCount = 0 // Start at the first life (counting from zero)
-	while (lifeCount < lives){
-		ctx.fillStyle = "red"
-		ctx.fillRect(10+lifeCount*35, 10, 20,20) // Draw the life, use the lifeCounter to control the position
-		lifeCount++ // Move to the next life
-	}
-	if (lives <= 0){
-		gameState = "gameOver"
-	}
-	//this will draw the dash cooldown as a purple bar
-	ctx.fillStyle = "purple"
-	ctx.fillRect(120,10,dashCooldown/5,20)
-	console.log("number of projectiles is, "+projecArray.length)
-	//this will draw the parry cooldown as a white bar
-	if(parry==0){
-	ctx.fillStyle = "white"
-	ctx.fillRect(320,10,parryCooldown,20)
-	}
+	
 // Draw the player
 drawPlayer()
 //move the player
 movePlayer()
+livesFunction()
+drawCooldowns()
 shieldFunction()
 drawProjectiles()
 //move the enemy
 //draw the enemy
 enemyFunction()
+//spawn the enemy
 enemySpawnFunction()
 	
 	//collision stuff
 
-	var projecNumber = 0 // Start at drop 0
-	while (projecNumber < projecArray.length){ // Keep going until you get to the last drop
+	var projecNumber = 0 
+	while (projecNumber < projecArray.length){ 
 		console.log("checking parry collision")
-		if (parryHit(projecArray[projecNumber].xPosition, projecArray[projecNumber].yPosition)){ // Check the drop's xPosition and yPosition
-		  // Change the umbrella color
+		if (parryHit(projecArray[projecNumber].xPosition, projecArray[projecNumber].yPosition)){
+		
 		  console.log("parried?")
-		   projecArray[projecNumber].parried=true	
-		   		// Reset the yPosition to the top		
+		   projecArray[projecNumber].parried=true		
 		}
-		 // Do the next drop
 		 projecNumber ++
 	}
 	var projecNumber = 0
@@ -162,32 +178,31 @@ while(projecNumber < projecArray.length){
 		enemyNumber++
 }
 }
-
-function drawProjectiles(){
-	var projecNumber = 0 // Start at drop 0
-	while (projecNumber < projecArray.length){ // Keep going until you get to the last drop
+function drawProjectiles(){//this function draws and triggers the movement of the projectiles
+	var projecNumber = 0 
+	while (projecNumber < projecArray.length){
 		projecArray[projecNumber].moveProjectile()
-		projecNumber ++ // Do the next drop
+		projecNumber ++ 
 	}if(projecNumber >= projecArray.length){
 		console.log("big")
 	}
 	ctx.fillStyle = "white"
-	var projecNumber = 0 // Start at drop 0
-	while (projecNumber < projecArray.length){ // Keep going until you get to the last drop
+	var projecNumber = 0 
+	while (projecNumber < projecArray.length){
 		ctx.fillRect(projecArray[projecNumber].xPosition, projecArray[projecNumber].yPosition, PROJECTILE1.WIDTH, PROJECTILE1.HEIGHT);
 		if(projecArray[projecNumber].yPosition>HEIGHT){
 			projecArray.splice(projecNumber,1)
 		}
-		projecNumber ++ // Do the next drop
+		projecNumber ++ 
 	}
 }
-class Projectile{
+class Projectile{//this class is used to create the projectiles
 	constructor(x,y){
 		this.xPosition = x
 		this.yPosition = y
 		this.parried = false
 	}
-	moveProjectile(){
+	moveProjectile(){//this function moves the projectile, both towards the player when first fired, and back up if parried
 		if(this.parried==false){
 		this.yPosition += PROJECTILE1.SPEED
 		}
@@ -195,7 +210,7 @@ class Projectile{
 		this.yPosition -= PROJECTILE1.SPEED*2
 	}
 }
-class Enemy{
+class Enemy{//this class is used to create the enemies
 	constructor(x,y){
 		this.xPosition = x
 		this.yPosition = y
@@ -205,45 +220,46 @@ class Enemy{
 		this.enemyMoveCooldown = 50
 	
 	}
-	moveEnemy(){
+	moveEnemy(){//this function moves the enemy
 		if(this.enemyMoveCooldown==0){
-			var random = Math.random()
-		if(this.xPosition+ENEMY1.WIDTH>WIDTH){
+				var random = Math.random()
+			if(this.xPosition+ENEMY1.WIDTH>WIDTH){
 			this.xPosition = WIDTH-ENEMY1.WIDTH
-		}
-		if(this.xPosition<0){
-			this.xPosition = 0
+			}
+			if(this.xPosition<0){
+				this.xPosition = 0
 		
-		}
-		if(random<0.5){
-			if(player.xPosition<this.xPosition){
-				this.direction="left"
 			}
-			if(player.xPosition>this.xPosition){
-				this.direction="right"
+			if(random<0.5){
+				if(player.xPosition<this.xPosition){
+					this.direction="left"
+				}
+				if(player.xPosition>this.xPosition){
+					this.direction="right"
+				}
+				if(this.direction=="left"){
+				this.xPosition -= ENEMY1.WIDTH
+				}
+				if(this.direction=="right"){
+				this.xPosition += ENEMY1.WIDTH
+				}
 			}
-		if(this.direction=="left"){
-			this.xPosition -= ENEMY1.WIDTH
+			if(random>0.5){
+				this.yPosition+=ENEMY1.WIDTH
+			}
+			this.enemyMoveCooldown = 50
 		}
-		if(this.direction=="right"){
-			this.xPosition += ENEMY1.WIDTH
-		}}
-		if(random>0.5){
-			this.yPosition+=ENEMY1.WIDTH
+		else{
+			this.enemyMoveCooldown--
+		}
 	}
-	this.enemyMoveCooldown = 50
-	}
-	else{
-		this.enemyMoveCooldown--
-	}
-}
 	enemyShoot(){
 		if (this.enemyShootCooldown==0){
-		projecArray.push(new Projectile(this.xPosition+ENEMY1.WIDTH/2,this.yPosition+ENEMY1.HEIGHT))
-		this.enemyShootCooldown = 100
+			projecArray.push(new Projectile(this.xPosition+ENEMY1.WIDTH/2,this.yPosition+ENEMY1.HEIGHT))
+			this.enemyShootCooldown = 100
+		}
+		this.enemyShootCooldown--
 	}
-	this.enemyShootCooldown--
-}
 }
 function drawPlayer(){
 	if(player.xPosition+player.width>WIDTH){
@@ -263,8 +279,8 @@ function drawPlayer(){
 		playerDamaged=false
 	}
 	if(lives>0){
-	ctx.fillStyle=player.colour
-	ctx.fillRect(player.xPosition, player.yPosition, player.width, player.height)
+		ctx.fillStyle=player.colour
+		ctx.fillRect(player.xPosition, player.yPosition, player.width, player.height)
 	}
 }
 function movePlayer(){
@@ -273,10 +289,34 @@ function movePlayer(){
 	}
 	if(rightPressed==true){
 		player.xPosition += player.speed
-		}
+	}
 }
-
-function shieldFunction(){
+function livesFunction(){//this function draws the lives and triggers GAMEOVER
+// the lives system is adapted from a resource from the class
+	// Every frame, draw all of the lives
+	// This loop will draw one red square for each life left
+	lifeCount = 0 // Start at the first life (counting from zero)
+	while (lifeCount < lives){
+		ctx.fillStyle = "red"
+		ctx.fillRect(10+lifeCount*35, 10, 20,20) // Draw the life, use the lifeCounter to control the position
+		lifeCount++ // Move to the next life
+	}
+	if (lives <= 0){//if the player has no lives left, the game is over
+		gameState = "gameOver"
+	}
+}
+function drawCooldowns(){//this function draws the cooldowns as bars
+	//this will draw the dash cooldown as a purple bar
+	ctx.fillStyle = "purple"
+	ctx.fillRect(120,10,dashCooldown/5,20)
+	console.log("number of projectiles is, "+projecArray.length)
+	//this will draw the parry cooldown as a white bar
+	if(parry==0){
+	ctx.fillStyle = "white"
+	ctx.fillRect(320,10,parryCooldown,20)
+	}
+} 
+function shieldFunction(){//displays the shield and handles the parry window
 	console.log(parryCooldown)
 	shield.xPosition=player.xPosition-10
 	shield.yPosition=player.yPosition-10
@@ -284,16 +324,11 @@ function shieldFunction(){
 		parryCooldown-=1
 	}
 	if(shieldPressed==true&&parry>0){
-ctx.fillStyle = "white"
-ctx.fillRect(player.xPosition-15,player.yPosition-15,50,2)
-parry-=1
+		ctx.fillStyle = "white"
+		ctx.fillRect(player.xPosition-15,player.yPosition-15,50,2)
+		parry-=1
 
 	}
-
-//else if(shieldPressed==true){
-//	ctx.fillStyle = "grey"
-//ctx.fillRect(shield.xPosition,shield.yPosition,shield.width,shield.height)
-//}
 }
 function enemyFunction(){
 	var enemyNumber=0
@@ -301,7 +336,7 @@ function enemyFunction(){
 		ctx.fillStyle=enemyArray[enemyNumber].colour
 		ctx.fillRect(enemyArray[enemyNumber].xPosition,enemyArray[enemyNumber].yPosition,ENEMY1.WIDTH,ENEMY1.HEIGHT)
 		enemyNumber++
-}
+	}
 	var enemyNumber=0
 	while(enemyNumber<enemyArray.length){
 		enemyArray[enemyNumber].moveEnemy()
@@ -311,11 +346,9 @@ function enemyFunction(){
 	while(enemyNumber<enemyArray.length){
 		enemyArray[enemyNumber].enemyShoot()
 		enemyNumber++
-
 	}
 }
 function enemySpawnFunction(){
-
 	if(enemySpawnCooldown==0){
 		var random = Math.random()
 		if(random<0.5){
@@ -368,26 +401,46 @@ function keyDownFunction(keyboardEvent){
 		case "w":
 			if(parryCooldown==0&&shieldPressed==false){//shieldPressed is there so it doesnt give parry frames mid block
 				parry = 12
-				
 				parryCooldown = 100
 			}
 			shieldPressed = true
+		break;
+		case "W":
+			if(parryCooldown==0&&shieldPressed==false){//shieldPressed is there so it doesnt give parry frames mid block
+				parry = 12
+				parryCooldown = 100
+			}
+			shieldPressed = true
+		break;
+		case "r":
+			rPressed=true
+		break;
+		case "R":
+			rPressed=true
+		break;
+		case "i":
+			iPressed=true
+		break;
+		case "I":
+			iPressed=true
+		break;
 		case " ":
 			spacePressed=true
 		default:
 			break;
 	}
 	function cooldown(){
-			dashCooldown=500
-			if (dashCooldown>0){
-				player.colour = "red"
-		var cooldownInterval =	setInterval(function(){
-					if(dashCooldown>0){
-					dashCooldown--
-					}	
-				}
-				,10)	}
-		setInterval(function(){ //cooldown cooldown
+		dashCooldown=500
+		if (dashCooldown>0){
+			player.colour = "red"
+			var cooldownInterval =	setInterval(function(){
+				if(dashCooldown>0){
+				dashCooldown--
+				}	
+			}
+			,10)
+		}
+		setInterval(function(){ //stops the dash cooldown going down when it hits 0 and changes the player colour back
 			if(dashCooldown==0){
 			player.colour="purple"
 					clearInterval(cooldownInterval)
@@ -398,7 +451,7 @@ function keyDownFunction(keyboardEvent){
 }
 window.addEventListener('keyup', keyUpFunction)
 
-function keyUpFunction(keyboardEvent){
+function keyUpFunction(keyboardEvent){//activates when a key is unpressed, and changes vars accordingly
 	var keyUp = keyboardEvent.key
 	console.log("You just unpressed", keyUp)
 	//stopping the player moving
@@ -415,11 +468,14 @@ function keyUpFunction(keyboardEvent){
 	if(keyUp==" "){
 		spacePressed=false
 	}
-	//	if (keyUp=="a"||keyUp=="d"){
-	//		playerSpeed=1
-	//}
+	if(keyUp=="r"||keyUp=="R"){
+		rPressed=false
 	}
-//collisions ahead
+	if(keyup=="i"||keyup=="I"){
+		iPressed=false
+	}
+	}
+// more collisions ahead
 
 function parryHit(projecX, projecY){
 
