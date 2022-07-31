@@ -1,8 +1,8 @@
 /*
-
-
-
-
+Title: SPRONK
+Author:Joseph Coleman
+Date: 31/07/2022
+Version: 1.0
 */
 console.log("started")
 const WIDTH = 500//this is the width of the canvas
@@ -48,7 +48,8 @@ var parryCooldown = 0//this represents the amount of time untill you can parry
 var ctx//this is the canvas context
 var lives = 3//this is the number of lives the player has
 var gameState = "menu"//this is the state of the game
-
+var score = 0 //this is the score of the player
+var highScore = 0//this is the highscore of the player this session
 window.onload=startCanvas
 function startCanvas(){
 	ctx=document.getElementById("myCanvas").getContext("2d")
@@ -93,11 +94,15 @@ function gameOver(){//this function displays the game over screen and resets inf
 	ctx.fillText("GAME OVER",160,HEIGHT/2)
 	ctx.fillText("Press Space to Restart",80,HEIGHT/2+50)
 	ctx.fillText("Press r to return to the main menu",20,HEIGHT/2+100)
+	ctx.fillText("SCORE: "+score,WIDTH/2-50,HEIGHT/2+150)
+	ctx.fillText("HIGH SCORE: "+highScore,WIDTH/2-50,HEIGHT/2+200)
 	if(spacePressed==true){
+		score=0
 		gameState="game"
 		spacePressed=false
 	}
 	if(rPressed==true){
+		score=0
 		gameState="menu"
 		rPressed=false
 	}
@@ -117,6 +122,12 @@ function instructions(){//this function displays the instructions
 	ctx.fillText("lives are displayed in the top left",20,60)
 	ctx.fillStyle= "purple"
 	ctx.fillText("a PURPLE BAR represents the dash cooldown",20,120)
+	ctx.fillStyle= "white"
+	ctx.fillText("Press Space to return to the main menu",WIDTH/2-150,HEIGHT/2+150)
+	if(spacePressed==true){
+		gameState="menu"
+		spacePressed=false
+	}
 	drawPlayer()
 	movePlayer()
 	shieldFunction()
@@ -129,54 +140,54 @@ function game(){	//this function is used to run/display the main game loop
 	ctx.fillStyle = "black"
 	ctx.fillRect(0, 0, WIDTH, HEIGHT)
 	
-// Draw the player
-drawPlayer()
-//move the player
-movePlayer()
-livesFunction()
-drawCooldowns()
-shieldFunction()
-drawProjectiles()
-//move the enemy
-//draw the enemy
-enemyFunction()
-//spawn the enemy
-enemySpawnFunction()
+	// Draw the player
+	drawPlayer()
 	
-	//collision stuff
-
+	//move the player
+	movePlayer()
+	livesFunction()
+	drawCooldowns()
+	shieldFunction()
+	drawProjectiles()
+	//move the enemy
+	//draw the enemy
+	enemyFunction()
+	//spawn the enemy
+	enemySpawnFunction()
+	scoreFunction()
+	//collision stuff ahead
 	var projecNumber = 0 
 	while (projecNumber < projecArray.length){ 
 		console.log("checking parry collision")
-		if (parryHit(projecArray[projecNumber].xPosition, projecArray[projecNumber].yPosition)){
-		
-		  console.log("parried?")
-		   projecArray[projecNumber].parried=true		
+		if (parryHit(projecArray[projecNumber].xPosition, projecArray[projecNumber].yPosition)){	
+			console.log("parried?")
+			projecArray[projecNumber].parried=true		
 		}
-		 projecNumber ++
+	 projecNumber ++
 	}
 	var projecNumber = 0
-while(projecNumber < projecArray.length){
-	console.log('checking projectile collision with player')
-	if(projectileHit(projecArray[projecNumber].xPosition, projecArray[projecNumber].yPosition)){
-		console.log('projectile hit player')
-		lives--
-		projecArray.splice(projecNumber,1)
-		playerDamaged=true
+	while(projecNumber < projecArray.length){
+		console.log('checking projectile collision with player')
+		if(projectileHit(projecArray[projecNumber].xPosition, projecArray[projecNumber].yPosition)){
+			console.log('projectile hit player')
+			lives--
+			projecArray.splice(projecNumber,1)
+			playerDamaged=true
+		}
+		projecNumber++
 	}
-	projecNumber++
-}
 	var enemyNumber = 0
 	while(enemyNumber < enemyArray.length){
 		var projecNumber = 0
 		while(projecNumber < projecArray.length){
 		if (projectileHitEnemy(enemyArray[enemyNumber].xPosition, enemyArray[enemyNumber].yPosition, projecArray[projecNumber].xPosition, projecArray[projecNumber].yPosition, projecArray[projecNumber].parried)){
 			console.log('projectile hit enemy'+enemyNumber)
+			score++
 			enemyArray.splice(enemyNumber,1)}
 			projecNumber++
 		}
 		enemyNumber++
-}
+	}
 }
 function drawProjectiles(){//this function draws and triggers the movement of the projectiles
 	var projecNumber = 0 
@@ -221,15 +232,16 @@ class Enemy{//this class is used to create the enemies
 	
 	}
 	moveEnemy(){//this function moves the enemy
-		if(this.enemyMoveCooldown==0){
-				var random = Math.random()
-			if(this.xPosition+ENEMY1.WIDTH>WIDTH){
+		if(this.xPosition+ENEMY1.WIDTH>WIDTH){
 			this.xPosition = WIDTH-ENEMY1.WIDTH
 			}
 			if(this.xPosition<0){
 				this.xPosition = 0
 		
 			}
+		if(this.enemyMoveCooldown==0){
+				var random = Math.random()
+			
 			if(random<0.5){
 				if(player.xPosition<this.xPosition){
 					this.direction="left"
@@ -237,11 +249,16 @@ class Enemy{//this class is used to create the enemies
 				if(player.xPosition>this.xPosition){
 					this.direction="right"
 				}
+				if(player.xPosition==this.xPosition){
+					this.direction="still"
 				if(this.direction=="left"){
 				this.xPosition -= ENEMY1.WIDTH
 				}
 				if(this.direction=="right"){
 				this.xPosition += ENEMY1.WIDTH
+				}
+				if(this.direction=="still"){
+					this.xPosition += 0
 				}
 			}
 			if(random>0.5){
@@ -330,6 +347,15 @@ function shieldFunction(){//displays the shield and handles the parry window
 
 	}
 }
+function scoreFunction(){//this function displays the score
+	ctx.fillStyle = "white"
+	ctx.font = "20px Arial"
+	ctx.fillText("Score: "+score,10,50)
+	if(score>=highScore){
+		highScore=score
+	}
+	ctx.fillText("High Score: "+highScore,10,70)
+}
 function enemyFunction(){
 	var enemyNumber=0
 	while(enemyNumber<enemyArray.length){
@@ -352,10 +378,10 @@ function enemySpawnFunction(){
 	if(enemySpawnCooldown==0){
 		var random = Math.random()
 		if(random<0.5){
-			makeEnemy(0,30)
+			makeEnemy(0,90)
 		}
 		if(random>0.5){
-			makeEnemy(WIDTH,30)
+			makeEnemy(WIDTH,90)
 		}
 		enemySpawnCooldown=enemySpawnCooldownNumber
 		enemySpawnCooldownNumber--
@@ -471,7 +497,7 @@ function keyUpFunction(keyboardEvent){//activates when a key is unpressed, and c
 	if(keyUp=="r"||keyUp=="R"){
 		rPressed=false
 	}
-	if(keyup=="i"||keyup=="I"){
+	if(keyUp=="i"||keyUp=="I"){
 		iPressed=false
 	}
 	}
