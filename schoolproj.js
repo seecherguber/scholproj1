@@ -38,11 +38,11 @@ const ENEMY1={
 	SPEED:10,
 }
 var enemyArray = []
-var enemySpawnCooldown = 0
-var enemySpawnCooldownNumber = 1000
-var projecArray = []
-var dashCooldown = 0
-var parryCooldown = 0
+var enemySpawnCooldown = 0//represents the time until the next enemy spawns
+var enemySpawnCooldownNumber = 1000//represents the amount of time used for the start of the enemySpawnCooldown variable
+var projecArray = []//this is where data for projectiles is stored
+var dashCooldown = 0//this represents the amount of time until you can dash
+var parryCooldown = 0//this represents the amount of time untill you can parry
 var ctx
 var lives = 3
 var gameState = "menu"
